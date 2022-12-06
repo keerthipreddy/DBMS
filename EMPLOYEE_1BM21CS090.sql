@@ -1,0 +1,108 @@
+create database EMPLOYEE_1BM21CS090;
+use EMPLOYEE_1BM21CS090;
+create table DEPT
+(
+DEPTNO int,
+DNAME varchar(50),
+DLOC varchar(50),
+primary key(DEPTNO)
+);
+
+create table EMPLOYEE
+(
+EMPNO int,
+ENAME varchar(40),
+MGR_NO int,
+HIREDATE date,
+SAL int,
+DEPTNO int,
+primary key(EMPNO),
+foreign key(DEPTNO) references DEPT(DEPTNO)
+);
+
+create table PROJECT
+(
+PNO int,
+PLOC varchar(50),
+PNAME varchar(40),
+primary key(PNO)
+);
+
+create table ASSIGNED_TO
+(
+EMPNO int,
+PNO int,
+JOB_ROLE varchar(50),
+primary key(EMPNO,PNO),
+foreign key(EMPNO) references EMPLOYEE(EMPNO),
+foreign key(PNO) references PROJECT(PNO)
+);
+
+create table INCENTIVES
+(
+EMPNO int,
+INCENTIVE_DATE date,
+INCENTIVE_AMOUNT int,
+primary key(EMPNO,INCENTIVE_DATE),
+foreign key(EMPNO) references EMPLOYEE(EMPNO)
+);
+
+insert into DEPT
+values(1,'SALES','BANGALORE'),
+(2,'MARKETING','MYSORE'),
+(3,'RESOURCE','HYDERABAD'),
+(4,'PRODUCTION','BANGALORE'),
+(5,'INFORMATION','MUMBAI'),
+(6,'SECURITY','DELHI');
+
+insert into EMPLOYEE
+values(11,'MOHAN',12,'2000-06-18',60000,1),
+(12,'AVINASH',20,'2000-02-17',80000,1),
+(13,'NIKIL',20,'2000-05-05',80000,3),
+(14,'RAVI',13,'2000-10-20',80000,3),
+(15,'RAM',20,'2000-06-06',70000,2),
+(16,'SIRI',15,'2000-05-20',60000,2),
+(17,'SEETHA',20,'2000-06-16',70000,4),
+(18,'MOHANA',17,'2000-10-10',50000,4),
+(19,'SAM',17,'2000-12-11',50000,4),
+(20,'KEERTHI',null,'2000-01-01',90000,5);
+
+Insert into PROJECT
+values(1,'BANGALORE','SALES REPORT'),
+(2,'BANGALORE','PRODUCTION REPORT'),
+(3,'MUMBAI','SURVEY REPORT'),
+(4,'MYSORE','INFOGRAPHICS'),
+(5,'MYSORE','ADVERTISEMENTS');
+
+insert into ASSIGNED_TO
+values(11,1,'ASSOCIATE'),
+(15,4,'ASSISTANT'),
+(16,4,'ASSISTANT'),
+(18,2,'ASSISTANT'),
+(19,2,'ASSOCIATE'),
+(20,5,'MANAGER');
+
+insert into INCENTIVES
+values(20,'2005-06-09',5000),
+(15,'2005-05-10',3000),
+(12,'2005-01-01',4000),
+(17,'2005-02,01',4000),
+(18,'2005-03-02',1000);
+
+select EMPNO 
+from EMPLOYEE
+where EMPNO IN( select EMPNO
+                FROM ASSIGNED_TO
+				WHERE PNO IN (SELECT PNO
+                               FROM PROJECT
+								WHERE PLOC IN('BANGALORE','HYDERABAD','MYSORE')));
+                                
+ SELECT EMPNO
+ FROM EMPLOYEE
+ WHERE EMPNO NOT IN ( SELECT EMPNO 
+                     FROM INCENTIVES);
+                     
+SELECT E.ENAME,E.EMPNO,D.DEPTNO,A.JOB_ROLE,D.DLOC
+FROM EMPLOYEE E,DEPT D,PROJECT P,ASSIGNED_TO A
+WHERE P.PNO=A.PNO AND E.EMPNO=A.EMPNO
+AND E.DEPTNO=D.DEPTNO AND P.PLOC=D.DLOC;
